@@ -42,7 +42,9 @@ const rule = ({pathname, search}) => {};
 
 ## onMatch(match, lastMatch) match the rule
 如针对rule '/Todo/:filter?'
+
 location 从 /Test 到 /Todo/all时触发，此时无lastMatch
+
 location 从 /Todo/all 到 /Todo/active时触发，此时有lastMatch
 ```js
 router.on('/:module', {
@@ -55,6 +57,7 @@ router.on('/:module', {
 
 ## onBreakMatch(lastMatch) 从match到mismatch时触发
 如针对rule '/Todo/:filter'
+
 location 从 /Todo/active 到 /Test时触发
 
 
