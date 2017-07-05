@@ -1,7 +1,10 @@
 #deef-router
+
 针对deef的思想设计的router，用于模块的初始化路由注册，提供history change时的callback环境。
 
+
 #Usages
+
 ```js
 // app.js
 import deef from 'deef';
@@ -17,6 +20,7 @@ export const router = deefRouter({history});
 import {router} from 'app';
 router.on(rule, {onMatch, onBreakMatch}[, key]);
 ```
+
 
 ## rule
 1、express style path
@@ -39,6 +43,7 @@ const rule = {pathname: '/TodoEntry', search: {form: location.search.form => {}}
 const rule = ({pathname, search}) => {};
 ```
 *return null or plain object, must pass key param*
+
 
 ## onMatch(match, lastMatch) match the rule
 如针对rule '/Todo/:filter?'
