@@ -1,10 +1,8 @@
-#deef-router
-
+# deef-router
 针对deef的思想设计的router，用于模块的初始化路由注册，提供history change时的callback环境。
 
 
-#Usages
-
+# Usages
 ```js
 // app.js
 import deef from 'deef';
