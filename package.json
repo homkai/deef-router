@@ -1,6 +1,6 @@
 {
   "name": "deef-router",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "deef router",
   "main": "./lib/index.js",
   "repository": {

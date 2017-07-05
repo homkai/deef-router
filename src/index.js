@@ -10,12 +10,24 @@ import matchPath from './matchPath';
 
 const ruleList = [];
 
-const on = ({history}) => (rule, {onMatch, onMiss, key}) => {
+const on = ({history, compareMatchKeys = ['path', 'params', 'url']}) => (rule, {onMatch, onBreakMatch}, key) => {
     // 一个rule只生效一次
-    const ruleKey = isString(rule) ? rule : (rule.path && JSON.stringify(rule) || (isString(key) ? key : ''));
+    let ruleKey = isString(key) && key;
     if (!ruleKey) {
-        throw new Error('When (rule || rule.path) is not string must declare a globally unique `key` prop in the 2nd param');
+        if (isString(rule)) {
+            ruleKey = rule;
+        }
+        else if (rule.path) {
+            ruleKey = JSON.stringify(rule);
+        }
+        else if (isString(rule.pathname) || !isFunction(rule.search)) {
+            ruleKey = `${rule.pathname}${getSearchKey(rule.search)}`;
+        }
     }
+    if (!ruleKey) {
+        throw new Error('When rule is function must pass a globally unique `key` in the 3nd param');
+    }
+
     if (ruleList.some(item => item.ruleKey === ruleKey)) {
         return;
     }
@@ -24,7 +36,7 @@ const on = ({history}) => (rule, {onMatch, onMiss, key}) => {
     ruleList.push({
         rule,
         ruleKey,
-        callbacks: {onMatch, onMiss}
+        callbacks: {onMatch, onBreakMatch}
     });
     onHistoryChange(history.location);
 
@@ -35,21 +47,21 @@ const on = ({history}) => (rule, {onMatch, onMiss, key}) => {
     function onHistoryChange(location) {
         const execList = [];
         ruleList.forEach(item => {
-            const {rule, callbacks: {onMatch, onMiss}} = item;
+            const {rule, ruleKey, callbacks: {onMatch, onBreakMatch}} = item;
             const match = matchRule(location, rule);
-            if (match && !isEqual(pick(item.lastMatch, ['path', 'params', 'url']), pick(match, ['path', 'params', 'url']))) {
+            if (match && !isEqual(pick(item.lastMatch, compareMatchKeys), pick(match, compareMatchKeys))) {
                 onMatch && execList.push({ruleKey, onMatch: onMatch.bind(null, match, item.lastMatch)});
                 item.lastMatch = match;
             }
             else if (!match && item.lastMatch !== null) {
-                onMiss && execList.push({ruleKey, onMiss: onMiss.bind(null, item.lastMatch)});
+                onBreakMatch && execList.push({ruleKey, onBreakMatch: onBreakMatch.bind(null, item.lastMatch)});
                 item.lastMatch = null;
             }
             (item.lastMatch !== null) && (item.lastMatch = match);
         });
-        // 先执行onMiss，执行顺序按注册顺序从后到早
-        execList.reverse().forEach(item => {
-            item.onMiss && item.onMiss();
+        // 先执行onBreakMatch，执行顺序按注册顺序从后到早
+        [...execList].reverse().forEach(item => {
+            item.onBreakMatch && item.onBreakMatch();
         });
         // 再执行onMatch
         execList.forEach(item => {
@@ -65,10 +77,50 @@ export default ({history}) => {
 };
 
 function matchRule(location, rule) {
+    if (isString(rule.pathname) || rule.search && !isFunction(rule.search)) {
+        let ret = {
+            path: rule.pathname,
+            params: {}
+        };
+        if (rule.pathname && rule.pathname !== location.pathname) {
+            ret = null;
+        }
+        if (ret && rule.search) {
+            const searchRule = isString(rule.search) ? parseSearch(rule.search) : rule.search;
+            const searchParams = parseSearch(location.search);
+            Object.keys(searchRule).every(key => {
+                const valRule = searchRule[key];
+                if ((isString(valRule) && valRule !== searchParams[key])
+                    || (isFunction(valRule) && !valRule(searchParams[key]))) {
+                    return false;
+                }
+                ret.params[key] = searchParams[key];
+                return true;
+            }) || (ret = null);
+        }
+        return ret;
+    }
     if (isString(rule) || isString(rule.path)) {
         return matchPath(location.pathname || location.path, rule);
     }
     if (isFunction(rule)) {
         return rule(location);
     }
+}
+
+function parseSearch(str) {
+    const ret = {};
+    str.replace(/(^\?|&$)/g, '').split('&').forEach(item => {
+        const [key, value] = item.split('=');
+        ret[key] = value;
+    });
+    return ret;
+}
+
+function getSearchKey(val) {
+    return val && '?' + (
+            isString(val)
+                ? val.replace(/(^\?|&$)/g, '')
+                : Object.keys(val).join('&')
+        );
 }
