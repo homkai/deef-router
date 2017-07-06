@@ -31,10 +31,10 @@ const rule = {path: '/', exact: true};
 ```js
 const rule = {pathname: '/Test'};
 const rule = {pathname: '/TodoEntry', search: '?from=Test'};
-const rule = {pathname: '/TodoEntry', search: {form: 'Test'}};
-const rule = {pathname: '/TodoEntry', search: {form: location.search.form => {}}};
+const rule = {pathname: '/TodoEntry', search: {from: 'Test'}};
+const rule = {pathname: '/TodoEntry', search: {from: location.search.from => {}}};
 ```
-*location.search是'?form=Test&otherKey=value'也会match上{search: '?form=Test'}*
+*location.search是'?from=Test&otherKey=value'也会match上{search: '?from=Test'}*
 
 3、function match
 ```js
@@ -57,10 +57,10 @@ router.on('/:module', {
 });
 router.on({
         pathname: '/TodoEntry',
-        search: {form: 'Test'}
+        search: {from: 'Test'}
     }, {
-    onMatch({pathname, search: {form}}) {
-        //do something with *form*
+    onMatch({pathname, search: {from}}) {
+        //do something with *from*
     }
 });
 ```
@@ -85,3 +85,6 @@ deef-router会根据key来保证同一个路由rule只注册一次（once on）
 当rule不是function时，不是必须要传key的，会根据rule的特征自动生成唯一的key
 
 当然，你也可以在任何调用的地方指定一个全局唯一的key来实现特殊逻辑，比如允许针对同一个rule注册两套路由规则
+
+# Demo
+[deef-examples-todomvc](https://github.com/homkai/deef/tree/master/examples/todomvc/)
