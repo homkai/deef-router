@@ -43,12 +43,12 @@ const rule = ({pathname, search}) => {};
 *return null or plain object, must pass key param*
 
 
-## onMatch(match, lastMatch) match the rule
+## onMatch(match, matchLog) match the rule
 如针对rule '/Todo/:filter?'
 
-location 从 /Test 到 /Todo/all时触发，此时无lastMatch
+location 从 /Test 到 /Todo/all时触发，此时无matchLog
 
-location 从 /Todo/all 到 /Todo/active时触发，此时有lastMatch
+location 从 /Todo/all 到 /Todo/active时触发，此时有matchLog(Array)
 ```js
 router.on('/:module', {
     onMatch({params: {module}}) {
@@ -64,12 +64,19 @@ router.on({
     }
 });
 ```
-*lastMatch意味着是在这同一个rule内，location的切换*
+*matchLogList意味着是在这同一个rule内，location的切换*
 
-## onBreakMatch(lastMatch) 从match到mismatch时触发
+## onBreakMatch(matchLog) 从match到mismatch时触发
 如针对rule '/Todo/:filter'
 
-location 从 /Todo/active 到 /Test时触发
+location 从 /Todo/all 到 /Todo/active不触发
+
+location 再从 /Todo/active 到 /Test时触发
+
+此时matchLog包含了两次match信息：
+```js
+[/Todo/active, /Todo/all] // 时间轴顺序从晚到早
+```
 
 
 ## key

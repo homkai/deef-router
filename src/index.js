@@ -60,7 +60,7 @@ const on = ({history, compareMatchKeys = COMPARE_MATCH_KEYS}) => (rule, {onMatch
                 item.matchLog = [];
             }
         });
-        // 先执行onBreakMatch，执行顺序按注册顺序从后到早
+        // 先执行onBreakMatch，执行顺序按注册顺序从晚到早
         [...execList].reverse().forEach(item => {
             item.onBreakMatch && item.onBreakMatch();
         });
