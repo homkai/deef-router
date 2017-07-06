@@ -37,7 +37,8 @@ const on = ({history, compareMatchKeys = COMPARE_MATCH_KEYS}) => (rule, {onMatch
     ruleList.push({
         rule,
         ruleKey,
-        callbacks: {onMatch, onBreakMatch}
+        callbacks: {onMatch, onBreakMatch},
+        matchLog: []
     });
     onHistoryChange(history.location);
 
@@ -50,15 +51,14 @@ const on = ({history, compareMatchKeys = COMPARE_MATCH_KEYS}) => (rule, {onMatch
         ruleList.forEach(item => {
             const {rule, ruleKey, callbacks: {onMatch, onBreakMatch}} = item;
             const match = matchRule(location, rule);
-            if (match && !isEqual(pick(item.lastMatch, compareMatchKeys), pick(match, compareMatchKeys))) {
-                onMatch && execList.push({ruleKey, onMatch: onMatch.bind(null, match, item.lastMatch)});
-                item.lastMatch = match;
+            if (match && !isEqual(pick(item.matchLog[0], compareMatchKeys), pick(match, compareMatchKeys))) {
+                onMatch && execList.push({ruleKey, onMatch: onMatch.bind(null, match, [...item.matchLog])});
+                item.matchLog.unshift(match);
             }
-            else if (!match && item.lastMatch !== null) {
-                onBreakMatch && execList.push({ruleKey, onBreakMatch: onBreakMatch.bind(null, item.lastMatch)});
-                item.lastMatch = null;
+            else if (!match && item.matchLog.length) {
+                onBreakMatch && execList.push({ruleKey, onBreakMatch: onBreakMatch.bind(null, [...item.matchLog])});
+                item.matchLog = [];
             }
-            (item.lastMatch !== null) && (item.lastMatch = match);
         });
         // 先执行onBreakMatch，执行顺序按注册顺序从后到早
         [...execList].reverse().forEach(item => {
