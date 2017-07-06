@@ -8,9 +8,10 @@ import pick from 'lodash/pick';
 
 import matchPath from './matchPath';
 
+const COMPARE_MATCH_KEYS = ['path', 'params', 'url', 'pathname', 'search'];
 const ruleList = [];
 
-const on = ({history, compareMatchKeys = ['path', 'params', 'url']}) => (rule, {onMatch, onBreakMatch}, key) => {
+const on = ({history, compareMatchKeys = COMPARE_MATCH_KEYS}) => (rule, {onMatch, onBreakMatch}, key) => {
     // 一个rule只生效一次
     let ruleKey = isString(key) && key;
     if (!ruleKey) {
@@ -79,8 +80,8 @@ export default ({history}) => {
 function matchRule(location, rule) {
     if (isString(rule.pathname) || rule.search && !isFunction(rule.search)) {
         let ret = {
-            path: rule.pathname,
-            params: {}
+            pathname: rule.pathname,
+            search: {}
         };
         if (rule.pathname && rule.pathname !== location.pathname) {
             ret = null;
@@ -94,7 +95,7 @@ function matchRule(location, rule) {
                     || (isFunction(valRule) && !valRule(searchParams[key]))) {
                     return false;
                 }
-                ret.params[key] = searchParams[key];
+                ret.search[key] = searchParams[key];
                 return true;
             }) || (ret = null);
         }
@@ -117,10 +118,10 @@ function parseSearch(str) {
     return ret;
 }
 
-function getSearchKey(val) {
-    return val && '?' + (
-            isString(val)
-                ? val.replace(/(^\?|&$)/g, '')
-                : Object.keys(val).join('&')
+function getSearchKey(search) {
+    return search && '?' + (
+            isString(search)
+                ? search.replace(/(^\?|&$)/g, '')
+                : Object.keys(search).map(key => isString(search[key]) ? `${key}=${search[key]}` : key).join('&')
         );
 }

@@ -54,7 +54,15 @@ router.on('/:module', {
     onMatch({params: {module}}) {
         //do something with *module*
     }
-})
+});
+router.on({
+        pathname: '/TodoEntry',
+        search: {form: 'Test'}
+    }, {
+    onMatch({pathname, search: {form}}) {
+        //do something with *form*
+    }
+});
 ```
 *lastMatch意味着是在这同一个rule内，location的切换*
 
