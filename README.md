@@ -16,7 +16,7 @@ export const router = deefRouter({history});
 
 // handler.js
 import {router} from 'app';
-router.on(rule, {onMatch, onBreakMatch}[, key]);
+router.register(rule, {onMatch, onBreakMatch}[, key]);
 ```
 
 
@@ -50,12 +50,12 @@ location 从 /Test 到 /Todo/all时触发，此时无matchLog
 
 location 从 /Todo/all 到 /Todo/active时触发，此时有matchLog(Array)
 ```js
-router.on('/:module', {
+router.register('/:module', {
     onMatch({params: {module}}) {
         //do something with *module*
     }
 });
-router.on({
+router.register({
         pathname: '/TodoEntry',
         search: {from: 'Test'}
     }, {

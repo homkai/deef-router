@@ -11,7 +11,7 @@ import matchPath from './matchPath';
 const COMPARE_MATCH_KEYS = ['path', 'params', 'url', 'pathname', 'search'];
 const ruleList = [];
 
-const on = ({history, compareMatchKeys = COMPARE_MATCH_KEYS}) => (rule, {onMatch, onBreakMatch}, key) => {
+const register = ({history, compareMatchKeys = COMPARE_MATCH_KEYS}) => (rule, {onMatch, onBreakMatch}, key) => {
     // 一个rule只生效一次
     let ruleKey = isString(key) && key;
     if (!ruleKey) {
@@ -71,9 +71,10 @@ const on = ({history, compareMatchKeys = COMPARE_MATCH_KEYS}) => (rule, {onMatch
     }
 };
 
-export default ({history}) => {
+export default ({history, compareMatchKeys}) => {
     return {
-        on: on({history})
+        on: register({history, compareMatchKeys}),
+        register: register({history, compareMatchKeys})
     };
 };
 
