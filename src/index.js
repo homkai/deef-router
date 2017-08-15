@@ -1,10 +1,10 @@
 /**
  * Created by baidu on 17/6/27.
  */
-import isString from 'lodash/isString';
-import isFunction from 'lodash/isFunction';
-import isEqual from 'lodash/isEqual';
-import pick from 'lodash/pick';
+import isString from 'lodash-es/isString';
+import isFunction from 'lodash-es/isFunction';
+import isEqual from 'lodash-es/isEqual';
+import pick from 'lodash-es/pick';
 
 import matchPath from './matchPath';
 

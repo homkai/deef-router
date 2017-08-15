@@ -1,6 +1,6 @@
 {
   "name": "deef-router",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "deef router",
   "main": "./lib/index.js",
   "repository": {
@@ -32,7 +32,7 @@
     "README.md"
   ],
   "dependencies": {
-    "lodash": "^4.17.4",
+    "lodash-es": "^4.17.4",
     "path-to-regexp": "^1.7.0"
   }
 }
