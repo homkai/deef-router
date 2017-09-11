@@ -82,7 +82,8 @@ function matchRule(location, rule) {
     if (isString(rule.pathname) || rule.search && !isFunction(rule.search)) {
         let ret = {
             pathname: rule.pathname,
-            search: {}
+            search: {},
+            url: window.location.href
         };
         if (rule.pathname && rule.pathname !== location.pathname) {
             ret = null;
