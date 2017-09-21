@@ -42,6 +42,8 @@ const rule = ({pathname, search}) => {};
 ```
 *return null or plain object, must pass key param*
 
+**rule是用来声明你关心哪些级的path，或者哪些search param，只要你关心的url部分变了就会触发onMatch。也就是说，你不关心的url部分变了，即使新的url命中了你的rule，也并不会告知你。举例你的rule是{search: {from: page => ['page1', 'page2'].includes(page)}}，表明你关心pathname和search中的from，那么当url从/home?from=test到/home?from=test&id=1的时候并不会触发这个rule的onMatch，默认id你并不关心**
+
 
 ## onMatch(match, matchLog) match the rule
 如针对rule '/Todo/:filter?'
